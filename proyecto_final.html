@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>69</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            font-family: 'Montserrat', sans-serif;
+            color: #fff;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        .love-container {
+            width: 350px;
+            height: 500px;
+            position: relative;
+            margin: 20px auto;
+            perspective: 1500px;
+        }
+
+        .envelope {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s ease;
+        }
+
+        .envelope-front, .envelope-back, .envelope-letter {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            backface-visibility: hidden;
+        }
+
+        .envelope-front {
+            background: linear-gradient(145deg, #bca9d6, #e161d0);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .envelope-seal {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: #de06f172;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 3;
+            transition: all 0.3s;
+        }
+
+        .envelope-seal:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+        }
+
+        .envelope-seal::before {
+            content: '❤';
+            font-size: 24px;
+            color: rgb(0, 0, 0);
+            position: absolute;
+        }
+
+        .envelope-back {
+            background: linear-gradient(145deg, #ec4040, #f48fb1);
+            transform: rotateY(180deg);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .envelope-letter {
+            background: url('https://images.unsplash.com/photo-1516541196182-6bdb0516ed27?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
+            transform: rotateY(180deg);
+            padding: 30px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #333;
+            z-index: 1;
+        }
+
+        .letter-content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+            max-height: 80%;
+            overflow-y: auto;
+            animation: letter-appear 1s ease forwards;
+            opacity: 0;
+            transform: translateY(20px);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+        }
+
+        .letter-message {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 20px;
+            white-space: pre-line;
+            font-weight: 500;
+        }
+
+        .letter-content::before {
+            content: '';
+            position: absolute;
+            top: -2px; right: -2px; bottom: -2px; left: -2px;
+            background: linear-gradient(45deg, +#e3e3e3, #f0edee, #e5e2e3);
+            border-radius: 12px;
+            z-index: -1;
+            animation: border-glow 3s ease-in-out infinite;
+        }
+
+        @keyframes border-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes letter-appear {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .letter-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 32px;
+            color: #ff0404;
+            margin-bottom: 20px;
+        }
+
+        .letter-message {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #000000;
+            margin-bottom: 20px;
+            white-space: pre-line;
+            font-weight: 500;
+        }
+
+        .letter-signature {
+            font-family: 'Dancing Script', cursive;
+            font-size: 24px;
+            color: #ed0606;
+            align-self: flex-end;
+            margin-top: 20px;
+        }
+
+        .open {
+            transform: rotateY(180deg);
+        }
+
+        .back-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .back-btn.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite ease-in-out;
+            box-shadow: 0 0 5px #fff, 0 0 10px #fff;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .heart-float {
+            position: absolute;
+            font-size: 24px;
+            color: #f48fb1;
+            animation: float-heart 6s infinite ease-in-out;
+            opacity: 0;
+            z-index: 5;
+            text-shadow: 0 0 5px #f06292;
+        }
+
+        @keyframes float-heart {
+            0% { transform: translateY(0) scale(0.5) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(-100px) scale(1.5) rotate(20deg); opacity: 0; }
+        }
+
+        .shooting-star {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: linear-gradient(to right, rgba(255,255,255,0), #fff 50%, rgba(255,255,255,0));
+            border-radius: 50%;
+            animation: shoot 8s infinite ease-out;
+            opacity: 0;
+        }
+
+        @keyframes shoot {
+            0% { transform: translate(0, 0) rotate(215deg) scale(0); opacity: 0; }
+            5% { opacity: 1; }
+            10% { transform: translate(-200px, 200px) rotate(215deg) scale(1); opacity: 0; }
+            100% { transform: translate(-200px, 200px) rotate(215deg) scale(1); opacity: 0; }
+        }
+
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #f48fb1;
+            border-radius: 50%;
+            animation: particle-burst 2s forwards ease-out;
+        }
+
+        @keyframes particle-burst {
+            0% { transform: translate(0, 0); opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)); opacity: 0; }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                height: 100vh;
+                overflow-y: auto;
+                padding: 20px 10px;
+                align-items: center;
+                justify-content: flex-start;
+            }
+
+            .love-container {
+                width: 90vw;
+                height: 80vh;
+                margin-top: 20px;
+                margin-bottom: 60px;
+            }
+
+            .envelope {
+                height: 100%;
+            }
+
+            .envelope-letter {
+                padding: 15px;
+                height: 100%;
+                overflow: visible;
+            }
+
+            .letter-content {
+                padding: 15px;
+                max-height: 65vh;
+                overflow-y: scroll;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .letter-title {
+                font-size: 24px;
+                margin-bottom: 10px;
+            }
+
+            .letter-message {
+                font-size: 14px;
+                line-height: 1.6;
+            }
+
+            .letter-signature {
+                font-size: 18px;
+                margin-top: 10px;
+            }
+
+            .back-btn {
+                font-size: 12px;
+                padding: 8px 16px;
+                bottom: 10px;
+                position: fixed;
+            }
+
+            .envelope-seal {
+                width: 50px;
+                height: 50px;
+            }
+
+            .envelope-seal::before {
+                width: 35px;
+                height: 35px;
+            }
+
+            .envelope-seal::after {
+                font-size: 20px;
+            }
+        }
+        /* Nuevos efectos de fondo */
+        .background-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Efecto de confeti */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #8200a9;
+            opacity: 0;
+            animation: confetti-fall 5s ease-in-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Efecto de brillo al abrir la carta */
+        .glow-effect {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(244,143,177,0.8) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            opacity: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .glow-effect.active {
+            animation: glow-expand 1.5s ease-out forwards;
+        }
+
+        @keyframes glow-expand {
+            0% { width: 0; height: 0; opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { width: 300vw; height: 300vw; opacity: 0; }
+        }
+
+        /* Efecto de pulsación para el sello */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(244, 143, 177, 0.7); }
+            70% { transform: translate(-50%, -50%) scale(1.05); box-shadow: 0 0 0 10px rgba(244, 143, 177, 0); }
+            100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(244, 143, 177, 0); }
+        }
+
+        /* Efecto de arcoiris para algunas estrellas */
+        .rainbow-star {
+            background: linear-gradient(90deg, #f8bbd0, #f48fb1, #f06292, #ec407a, #e91e63);
+            background-size: 800% 800%;
+            animation: rainbow 10s ease infinite, twinkle 3s infinite ease-in-out;
+        }
+
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Efecto de música flotante */
+        .music-note {
+            position: absolute;
+            font-size: 20px;
+            color: rgba(244, 143, 177, 0.7);
+            animation: float-note 4s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes float-note {
+            0% { transform: translateY(0) translateX(0); opacity: 0; }
+            20% { opacity: 0.7; }
+            80% { opacity: 0.7; }
+            100% { transform: translateY(-100px) translateX(20px); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div id="stars"></div>
+    <div id="shooting-stars"></div>
+    <div id="floating-hearts"></div>
+    
+    <div class="love-container">
+        <div class="envelope" id="envelope">
+            <div class="envelope-front">
+                <div class="envelope-seal" id="envelope-seal"></div>
+            </div>
+            <div class="envelope-back"></div>
+            <div class="envelope-letter">
+                <div class="letter-content">
+                    <div class="letter-title">TE AMO MI AMOR</div>
+                    <div class="letter-message" id="letter-message"></div>
+                    <div class="letter-signature">DE: CAMILO<br>PARA: AMY</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="back-btn" id="back-btn">Cerrar carta</button>
+
+    <div class="background-effects" id="background-effects"></div>
+    <div class="glow-effect" id="glow-effect"></div>
+    
+    <script>
+        // Crear estrellas mejoradas
+        function createStars() {
+            const body = document.body;
+            for (let i = 0; i < 200; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 3 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                body.appendChild(star);
+            }
+        }
+
+        // Crear estrellas fugaces
+        function createShootingStars() {
+            const container = document.getElementById('shooting-stars');
+            for (let i = 0; i < 5; i++) {
+                const star = document.createElement('div');
+                star.className = 'shooting-star';
+                star.style.top = Math.random() * 40 + '%';
+                star.style.left = Math.random() * 40 + 60 + '%';
+                star.style.animationDelay = Math.random() * 8 + 's';
+                container.appendChild(star);
+            }
+        }
+
+        // Crear corazones flotantes con más variedad
+        function createFloatingHearts() {
+            const container = document.getElementById('floating-hearts');
+            const colors = ['#ff6868', '#ff6868', '#000000', '#000000'];
+            
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart-float';
+                heart.innerHTML = '❤';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.top = Math.random() * 100 + '%';
+                heart.style.animationDelay = Math.random() * 6 + 's';
+                heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+                heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+                container.appendChild(heart);
+            }
+        }
+
+        // Crear efecto de partículas
+        function createParticles() {
+            const container = document.createElement('div');
+            container.className = 'particles';
+            document.body.appendChild(container);
+            
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Posición aleatoria alrededor del sello
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * 100 + 50;
+                const x = Math.cos(angle) * distance;
+                const y = Math.sin(angle) * distance;
+                
+                particle.style.setProperty('--x', x + 'px');
+                particle.style.setProperty('--y', y + 'px');
+                
+                // Color aleatorio
+                const colors = ['#ff6868', '#8200a', '#ff7eb3', '#ff65a3', '#000000'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Tamaño aleatorio
+                particle.style.width = (Math.random() * 8 + 4) + 'px';
+                particle.style.height = particle.style.width;
+                
+                // Velocidad aleatoria
+                particle.style.animationDuration = (Math.random() * 1 + 1) + 's';
+                
+                container.appendChild(particle);
+            }
+            
+            setTimeout(() => {
+                container.remove();
+            }, 2000);
+        }
+
+        // Abrir sobre
+        document.getElementById('envelope-seal').addEventListener('click', function() {
+            document.getElementById('envelope').classList.add('open');
+            document.getElementById('back-btn').classList.add('show');
+            createParticles();
+            createConfetti();
+            activateGlowEffect();
+            
+            // Reproducir sonido (opcional)
+            const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-magical-coin-win-1936.mp3');
+            audio.volume = 0.5;
+            audio.play().catch(e => console.log('Audio no pudo reproducirse: ', e));
+        });
+
+        // Cerrar sobre
+        document.getElementById('back-btn').addEventListener('click', function() {
+            document.getElementById('envelope').classList.remove('open');
+            document.getElementById('back-btn').classList.remove('show');
+        });
+
+        function setMessage(message) {
+            document.getElementById('letter-message').innerHTML = message;
+        }
+
+        // Crear notas musicales flotantes
+        function createMusicNotes() {
+            const container = document.getElementById('background-effects');
+            const notes = ['♪', '♫', '♬', '♩', '♭', '♮'];
+            
+            setInterval(() => {
+                const note = document.createElement('div');
+                note.className = 'music-note';
+                note.innerHTML = notes[Math.floor(Math.random() * notes.length)];
+                note.style.left = Math.random() * 100 + '%';
+                note.style.top = Math.random() * 100 + '%';
+                note.style.opacity = '0';
+                container.appendChild(note);
+                
+                setTimeout(() => {
+                    note.remove();
+                }, 4000);
+            }, 2000);
+        }
+
+        // Crear confeti
+        function createConfetti() {
+            const container = document.getElementById('background-effects');
+            const colors = ['#ff6868', '#ffb347', '#a6ff4d', '#4da6ff', '#d24dff', '#ff4d94'];
+            
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.width = (Math.random() * 8 + 5) + 'px';
+                    confetti.style.height = (Math.random() * 8 + 5) + 'px';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                    confetti.style.animationDelay = (Math.random() * 2) + 's';
+                    
+                    // Formas variadas
+                    const shape = Math.floor(Math.random() * 4);
+                    if (shape === 0) {
+                        confetti.style.borderRadius = '50%';
+                    } else if (shape === 1) {
+                        confetti.style.borderRadius = '0';
+                    } else if (shape === 2) {
+                        confetti.style.width = '8px';
+                        confetti.style.height = '8px';
+                        confetti.style.transform = 'rotate(45deg)';
+                    }
+                    
+                    container.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }, Math.random() * 500);
+            }
+        }
+
+        // Crear estrellas arcoiris
+        function createRainbowStars() {
+            const body = document.body;
+            for (let i = 0; i < 20; i++) {
+                const star = document.createElement('div');
+                star.className = 'star rainbow-star';
+                const size = Math.random() * 4 + 2;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                body.appendChild(star);
+            }
+        }
+
+        // Efecto de brillo al abrir
+        function activateGlowEffect() {
+            const glowEffect = document.getElementById('glow-effect');
+            glowEffect.classList.add('active');
+            
+            setTimeout(() => {
+                glowEffect.classList.remove('active');
+            }, 1500);
+        }
+
+        // Inicializar
+        window.onload = function() {
+            createStars();
+            createRainbowStars();
+            createShootingStars();
+            createFloatingHearts();
+            createMusicNotes();
+            
+            // Agregar efecto de pulsación al sello
+            document.getElementById('envelope-seal').classList.add('pulse');
+            
+            const mensaje = ``;
+            setMessage(mensaje);
+        };
+    </script>
+</body>
+</html>
